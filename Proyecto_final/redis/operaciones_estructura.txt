@@ -1,0 +1,60 @@
+
+1. STRING (Contadores)
+
+- SET key value
+- GET key
+- INCR key
+- DECR key
+
+Ejemplo del proyecto:
+SET pacientes_atendidos_hoy 0
+INCR pacientes_atendidos_hoy
+GET pacientes_atendidos_hoy
+
+
+2. LIST (Colas de espera)
+
+- LPUSH key value
+- LRANGE key start end
+- RPOP key
+
+Ejemplo:
+LPUSH sala_espera "Ana Gómez"
+LPUSH sala_espera "Carlos Ruiz"
+LPUSH sala_espera "Laura Ortega"
+LRANGE sala_espera 0 -1
+RPOP sala_espera
+
+
+3. HASH (Datos ligeros cacheados)
+
+- HSET key field value
+- HGETALL key
+- HGET key field
+
+Ejemplo:
+HSET doctor:102 nombre "Juan Pérez" especialidad "Cardiología" disponible "true"
+HGETALL doctor:102
+HSET doctor:102 disponible "false"
+
+
+4. SET (Elementos únicos)
+
+- SADD key value
+- SMEMBERS key
+- SISMEMBER key value
+
+Ejemplo:
+SADD pacientes_unicos "Ana" "Carlos" "Luis"
+SMEMBERS pacientes_unicos
+SADD pacientes_unicos "Ana"  # no se duplica
+
+
+5. TTL y expiración
+
+- SET key value EX 120
+- TTL key
+
+Ejemplo:
+SET codigo_verificacion "839201" EX 120
+TTL codigo_verificacion

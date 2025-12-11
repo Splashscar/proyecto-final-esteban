@@ -1,0 +1,29 @@
+# CONEXIÓN Y AUTENTICACIÓN
+AUTH 543216789
+
+~ STRINGS — Operaciones básicas
+SET pacientes_atendidos_hoy 0
+~NCR pacientes_atendidos_hoy
+INCR pacientes_atendidos_hoy
+GET pacientes_atendidos_hoy
+
+# LIST — Cola de espera de pacientes
+LPUSH sala_espera "Ana Gómez"
+LPUSH sala_espera "Carlos Ruiz"
+LPUSH sala_espera "Laura Ortega"
+LRANGE sala_espera 0 -1
+RPOP sala_espera
+
+# HASH — Información ligera cacheada del doctor
+HSET doctor:102 nombre "Juan Pérez" especialidad "Cardiología" disponible "true"
+HGETALL doctor:102
+HSET doctor:102 disponible "false"
+
+# SET — Elementos únicos
+SADD pacientes_unicos "Ana" "Carlos" "Luis"
+SMEMBERS pacientes_unicos
+SADD pacientes_unicos "Ana"   # No lo duplica
+
+# TTL — Expiración de claves
+SET codigo_verificacion "839201" EX 120
+TTL codigo_verificacion
