@@ -1,0 +1,117 @@
+
+REDIS – Casos de Uso y Ejemplos Prácticos
+Sistema: Gestión de Clínica
+
+
+Redis se utiliza para manejar procesos rápidos y temporales
+que complementan a PostgreSQL (transaccional) y MongoDB
+(documental). Aquí se definen los casos de uso implementados
+y los comandos reales utilizados.
+
+
+1. STRING – Contador automático de turnos
+
+USO:
+Redis maneja un contador global para los turnos de los
+pacientes en recepción. Cada vez que llega un paciente, Redis
+incrementa el contador de forma atómica.
+
+CLAVE:
+turno:recepcion
+
+COMANDOS:
+SET turno:recepcion 0
+INCR turno:recepcion
+INCR turno:recepcion
+GET turno:recepcion
+
+RESULTADOS:
+El contador aumenta: 1, 2, 3, etc.
+
+============================================================
+2. HASH – Almacenamiento temporal de sesiones de doctores
+
+
+USO:
+Redis mantiene la sesión de un doctor conectado al sistema.
+La sesión expira automáticamente después de 1 hora.
+
+CLAVE:
+session:doctor:45
+
+CAMPOS:
+id, nombre, especialidad, ultimo_acceso
+
+COMANDOS:
+HSET session:doctor:45 id "45"
+HSET session:doctor:45 nombre "Laura Ramírez"
+HSET session:doctor:45 especialidad "Cardiología"
+HSET session:doctor:45 ultimo_acceso "2025-03-12 08:33"
+
+TTL (expiración):
+EXPIRE session:doctor:45 3600
+
+CONSULTA:
+HGETALL session:doctor:45
+
+============================================================
+3. LIST – Cola de pacientes en urgencias
+
+
+USO:
+Los pacientes ingresan a urgencias y se organizan en una cola
+FIFO. Redis permite atenderlos en orden de llegada.
+
+CLAVE:
+cola:urgencias
+
+COMANDOS:
+LPUSH cola:urgencias "Paciente-112"
+LPUSH cola:urgencias "Paciente-113"
+LPUSH cola:urgencias "Paciente-114"
+
+Obtener el siguiente paciente a atender:
+RPOP cola:urgencias
+
+Consultar la cola completa:
+LRANGE cola:urgencias 0 -1
+
+============================================================
+4. SET – Registro de pacientes conectados actualmente
+
+
+USO:
+Redis guarda un conjunto de pacientes que están usando la app
+móvil. No permite duplicados.
+
+CLAVE:
+pacientes:conectados
+
+COMANDOS:
+SADD pacientes:conectados "98"
+SADD pacientes:conectados "34"
+SADD pacientes:conectados "98"   (no se repite)
+
+Eliminar paciente cuando se desconecta:
+SREM pacientes:conectados "34"
+
+Consultar todos:
+SMEMBERS pacientes:conectados
+
+============================================================
+5. REGISTROS CON TTL – Códigos de validación para citas
+
+
+USO:
+Cuando un paciente agenda una cita desde la app, Redis genera
+un código temporal de verificación válido por 5 minutos.
+
+CLAVE:
+codigo:cita:784
+
+COMANDO:
+SET codigo:cita:784 "X92KL1" EX 300
+
+Consultar el código:
+GET codigo:cita:784
+
